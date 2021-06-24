@@ -65,6 +65,8 @@ class AxolotlClient extends BaseClient {
 	 * @property {EventOptions} [events={}]
 	 * @property {MonitorOptions} [monitors={}]
 	 * @property {InhibitorOptions} [inhibitors={}]
+	 * @property {ProviderOptions} [providers={}]
+	 * @property {TaskOptions} [tasks={}]
 	 */
 
 

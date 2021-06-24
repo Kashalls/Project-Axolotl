@@ -47,3 +47,7 @@ module.exports = {
  * @external ExecOptions
  * @see {@link https://nodejs.org/dist/latest-v10.x/docs/api/child_process.html#child_process_child_process_exec_command_options_callback}
  */
+/**
+ * @external Collection
+ * @see {@link https://discord.js.org/#/docs/main/master/class/Collection}
+ */

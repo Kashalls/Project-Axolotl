@@ -3,17 +3,11 @@ const { join } = require('path');
 
 /**
  * The common class for all pieces
- * @see Argument
  * @see Command
  * @see Event
- * @see Extendable
- * @see Finalizer
  * @see Inhibitor
- * @see Language
  * @see Monitor
  * @see Provider
- * @see SqlProvider
- * @see Serializer
  * @see Task
  */
 class Piece {
@@ -166,6 +160,7 @@ class Piece {
 
 	/**
 	 * Defines the JSON.stringify behavior of this task.
+	 * @since 0.0.1
 	 * @returns {Object}
 	 */
 	toJSON() {
