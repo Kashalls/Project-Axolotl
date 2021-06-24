@@ -4,7 +4,7 @@ module.exports = {
 	Axolotl: require('./library/Client'),
 
 	Schedule: require('./library/schedule/Schedule'),
-	ShheduleTask: require('./library/schedule/ScheduleTask'),
+	ShheduleTask: require('./library/schedule/ScheduledTask'),
 
 	Piece: require('./library/structures/base/Piece'),
 	Store: require('./library/structures/base/Store'),

@@ -1,4 +1,4 @@
-const Piece = require('./Piece');
+const Piece = require('./base/Piece');
 
 class Command extends Piece {
 
