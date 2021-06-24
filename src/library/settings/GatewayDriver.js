@@ -2,7 +2,7 @@ const Gateway = require('./Gateway');
 const Schema = require('./schema/Schema');
 
 /**
- * <warning>GatewayDriver is a singleton, use {@link KlasaClient#gateways} instead.</warning>
+ * <warning>GatewayDriver is a singleton, use {@link AxolotlClient#gateways} instead.</warning>
  * Gateway's driver to make new instances of it, with the purpose to handle different databases simultaneously.
  */
 class GatewayDriver {
@@ -16,14 +16,14 @@ class GatewayDriver {
 
 	/**
 	 * @since 0.3.0
-	 * @param {KlasaClient} client The Klasa client
+	 * @param {AxolotlClient} client The axolotl client
 	 */
 	constructor(client) {
 		/**
 		 * The client this GatewayDriver was created with.
 		 * @since 0.3.0
 		 * @name GatewayDriver#client
-		 * @type {KlasaClient}
+		 * @type {AxolotlClient}
 		 * @readonly
 		 */
 		Object.defineProperty(this, 'client', { value: client });

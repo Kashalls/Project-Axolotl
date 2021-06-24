@@ -2,15 +2,15 @@ const Inhibitor = require('./Inhibitor');
 const Store = require('./base/Store');
 
 /**
- * Stores all the inhibitors in Klasa
+ * Stores all the inhibitors in Axolotl
  * @extends Store
  */
 class InhibitorStore extends Store {
 
 	/**
-	 * Constructs our InhibitorStore for use in Klasa
+	 * Constructs our InhibitorStore for use in Axolotl
 	 * @since 0.0.1
-	 * @param {KlasaClient} client The Klasa Client
+	 * @param {AxolotlClient} client The Axolotl Client
 	 */
 	constructor(client) {
 		super(client, 'inhibitors', Inhibitor);
@@ -19,7 +19,7 @@ class InhibitorStore extends Store {
 	/**
 	 * Runs our inhibitors on the command.
 	 * @since 0.0.1
-	 * @param {KlasaMessage} message The message object from Discord.js
+	 * @param {string} message The message object from Discord.js
 	 * @param {Command} command The command being ran.
 	 * @param {boolean} [selective=false] Whether or not we should ignore certain inhibitors to prevent spam.
 	 * @returns {void}

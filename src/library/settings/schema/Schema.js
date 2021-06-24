@@ -78,7 +78,7 @@ class Schema extends Map {
 	 * // callback is always passed the created folder to encourage chaining
 	 * Schema.add('folder', (folder) => folder.add('piece', 'textchannel'));
 	 * // or
-	 * Schema.add('piece', 'string', { default: 'klasa!' });
+	 * Schema.add('piece', 'string', { default: 'axolotl!' });
 	 */
 	add(key, typeOrCallback, options = {}) {
 		if (!typeOrCallback) throw new Error(`The type for ${key} must be a string for pieces, and a callback for folders`);

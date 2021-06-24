@@ -1,7 +1,7 @@
 const Piece = require('./base/Piece');
 
 /**
- * Base class for all Klasa Task pieces. See {@tutorial CreatingTasks} for more information how to use this class
+ * Base class for all Task pieces. See {@tutorial CreatingTasks} for more information how to use this class
  * to build custom tasks.
  * @tutorial CreatingTasks
  * @extends {Piece}

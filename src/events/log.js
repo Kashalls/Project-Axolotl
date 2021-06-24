@@ -1,4 +1,4 @@
-const { Event } = require('klasa');
+const { Event } = require('axolotl');
 
 module.exports = class extends Event {
 

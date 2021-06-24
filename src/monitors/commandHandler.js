@@ -1,4 +1,4 @@
-const { Monitor, Stopwatch } = require('klasa');
+const { Monitor, Stopwatch } = require('axolotl');
 
 module.exports = class extends Monitor {
 

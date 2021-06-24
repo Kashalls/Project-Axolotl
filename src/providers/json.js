@@ -3,6 +3,11 @@ const Util = require('../library/util/Util');
 const { resolve } = require('path');
 const fs = require('fs-nextra');
 
+/**
+ * JSON provider that provides json-based storage at a atomic level.
+ * @extends {Provider}
+ */
+
 module.exports = class extends Provider {
 
 	constructor(...args) {

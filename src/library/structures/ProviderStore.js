@@ -2,22 +2,22 @@ const Provider = require('./Provider');
 const Store = require('./base/Store');
 
 /**
- * Stores all providers for use in Klasa
+ * Stores all providers for use in Axolotl
  * @extends Store
  */
 class ProviderStore extends Store {
 
 	/**
-	 * Constructs our ProviderStore for use in Klasa
+	 * Constructs our ProviderStore for use in Axolotl
 	 * @since 0.0.1
-	 * @param {KlasaClient} client The Klasa client
+	 * @param {AxolotlClient} client The Axolotl client
 	 */
 	constructor(client) {
 		super(client, 'providers', Provider);
 	}
 
 	/**
-	 * The default provider set in {@link KlasaClientOptions.providers}
+	 * The default provider set in {@link AxolotlClientOptions.providers}
 	 * @since 0.5.0
 	 * @type {?Provider}
 	 * @readonly

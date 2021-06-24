@@ -81,7 +81,7 @@ class AxolotlClient extends BaseClient {
 		/**
 		 * The options the client was instantiated with.
 		 * @since 0.0.1
-		 * @name {AxolotlClient#options}
+		 * @name AxolotlClient#options
 		 * @type {AxolotlClientOptions}
 		 */
 

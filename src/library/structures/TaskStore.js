@@ -2,15 +2,15 @@ const Task = require('./Task');
 const Store = require('./base/Store');
 
 /**
- * Stores all task pieces for use in Klasa
+ * Stores all task pieces for use in Axolotl
  * @extends Store
  */
 class TaskStore extends Store {
 
 	/**
-	 * Constructs our TaskStore for use in Klasa
+	 * Constructs our TaskStore for use in Axolotl
 	 * @since 0.5.0
-	 * @param {KlasaClient} client The Klasa client
+	 * @param {AxolotlClient} client The Axolotl client
 	 */
 	constructor(client) {
 		super(client, 'tasks', Task);

@@ -27,11 +27,11 @@ class SchemaPiece {
 	 */
 	constructor(parent, key, type, options = {}) {
 		/**
-		 * The KlasaClient for this SchemaPiece
+		 * The AxolotlClient for this SchemaPiece
 		 * @name SchemaPiece#Client
 		 * @since 0.5.0
 		 * @readonly
-		 * @type {KlasaClient}
+		 * @type {AxolotlClient}
 		 */
 		Object.defineProperty(this, 'client', { value: null, writable: true });
 

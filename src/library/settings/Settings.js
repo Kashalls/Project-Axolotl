@@ -48,7 +48,7 @@ class Settings {
 		/**
 		 * The client this Settings was created with.
 		 * @since 0.5.0
-		 * @type {KlasaClient}
+		 * @type {AxolotlClient}
 		 * @name Settings#client
 		 * @readonly
 		 */
@@ -161,7 +161,7 @@ class Settings {
 	 * Reset a value from an entry.
 	 * @since 0.5.0
 	 * @param {(string|string[])} [keys] The key to reset
-	 * @param {KlasaGuild} [guild] A KlasaGuild instance for multilingual support
+	 * @param {string} [username] A username instance for multilingual support
 	 * @param {SettingsResetOptions} [options={}] The options for the reset
 	 * @returns {SettingsUpdateResult}
 	 * @example
@@ -174,10 +174,10 @@ class Settings {
 	 * // Reset a key
 	 * Settings#reset('prefix');
 	 */
-	async reset(keys, guild, { avoidUnconfigurable = false, force = false } = {}) {
-		if (typeof guild === 'boolean') {
-			avoidUnconfigurable = guild;
-			guild = undefined;
+	async reset(keys, username, { avoidUnconfigurable = false, force = false } = {}) {
+		if (typeof username === 'boolean') {
+			avoidUnconfigurable = username;
+			username = undefined;
 		}
 
 		// If the entry does not exist in the DB, it'll never be able to reset a key
@@ -190,9 +190,7 @@ class Settings {
 			for (const key of keys) {
 				const path = this.gateway.getPath(key, { piece: true, avoidUnconfigurable, errors: false });
 				if (!path) {
-					result.errors.push(guild && guild.language ?
-						guild.language.get('COMMAND_CONF_GET_NOEXT', key) :
-						`The path ${key} does not exist in the current schema, or does not correspond to a piece.`);
+					result.errors.push(`The path ${key} does not exist in the current schema, or does not correspond to a piece.`);
 					continue;
 				}
 				const value = deepClone(path.piece.default);
@@ -209,13 +207,13 @@ class Settings {
 	 * @since 0.5.0
 	 * @param {(string|Object)} key The key to modify
 	 * @param {*} [value] The value to parse and save
-	 * @param {string} [clientUsername] A guild resolvable
+	 * @param {string} [clientUsername] A username resolvable
 	 * @param {SettingsUpdateOptions} [options={}] The options for the update
 	 * @returns {SettingsUpdateResult}
 	 * @async
 	 * @example
 	 * // Updating the value of a key
-	 * Settings#update('roles.administrator', '339943234405007361', message.guild);
+	 * Settings#update('roles.administrator', '339943234405007361', message.username);
 	 *
 	 * // Updating an array:
 	 * Settings#update('userBlacklist', '272689325521502208');
@@ -224,17 +222,17 @@ class Settings {
 	 * Settings#update('userBlacklist', '272689325521502208', { action: 'add' });
 	 *
 	 * // Updating it with a json object:
-	 * Settings#update({ roles: { administrator: '339943234405007361' } }, message.guild);
+	 * Settings#update({ roles: { administrator: '339943234405007361' } }, message.username);
 	 *
 	 * // Updating multiple keys (with json object):
-	 * Settings#update({ prefix: 'k!', language: 'es-ES' }, message.guild);
+	 * Settings#update({ prefix: 'k!', language: 'es-ES' }, message.username);
 	 *
 	 * // Updating multiple keys (with arrays):
 	 * Settings#update([['prefix', 'k!'], ['language', 'es-ES']]);
 	 */
 	update(key, value, clientUsername, options) {
 		let entries;
-		// Overload update(object, GuildResolvable);
+		// Overload update(object, usernameResolvable);
 		if (isObject(key)) {
 			[clientUsername, options] = [value, clientUsername];
 			entries = objectToTuples(key);
@@ -250,7 +248,7 @@ class Settings {
 		}
 
 		// Overload update(string|string[], any|any[], SettingsUpdateOptions);
-		// Overload update(string|string[], any|any[], GuildResolvable, SettingsUpdateOptions);
+		// Overload update(string|string[], any|any[], usernameResolvable, SettingsUpdateOptions);
 		// If the third argument is undefined and the second is an object literal, swap the variables.
 		if (typeof options === 'undefined' && isObject(clientUsername)) [clientUsername, options] = [null, clientUsername];
 		if (clientUsername) clientUsername = this.client.username;
@@ -267,7 +265,7 @@ class Settings {
 	/**
 	 * Get a list.
 	 * @since 0.5.0
-	 * @param {KlasaMessage} message The Message instance
+	 * @param {string} message The Message instance
 	 * @param {(Schema|string)} path The path to resolve
 	 * @returns {string}
 	 */
@@ -302,7 +300,7 @@ class Settings {
 	/**
 	 * Resolve a string.
 	 * @since 0.5.0
-	 * @param {KlasaMessage} message The Message to use
+	 * @param {string} message The Message to use
 	 * @param {(SchemaPiece|string)} path The path to resolve
 	 * @returns {string}
 	 * @private
@@ -319,30 +317,30 @@ class Settings {
 	 * Update this Settings instance
 	 * @since 0.5.0
 	 * @param {Array<Array<*>>} entries The entries to update
-	 * @param {?KlasaGuild} guild The KlasaGuild for context in SchemaPiece#parse
+	 * @param {?string} username The username for context in SchemaPiece#parse
 	 * @param {SettingsUpdateOptions} options The parse options
 	 * @returns {SettingsUpdateResult}
 	 * @private
 	 */
-	async _update(entries, guild, options) {
+	async _update(entries, username, options) {
 		const result = { errors: [], updated: [] };
 		const pathOptions = { piece: true, avoidUnconfigurable: options.avoidUnconfigurable, errors: false };
 		const promises = [];
 		for (const [key, value] of entries) {
 			const path = this.gateway.getPath(key, pathOptions);
 			if (!path) {
-				result.errors.push(guild ?
-					guild.language.get('COMMAND_CONF_GET_NOEXT', key) :
+				result.errors.push(username ?
+					username.language.get('COMMAND_CONF_GET_NOEXT', key) :
 					`The path ${key} does not exist in the current schema, or does not correspond to a piece.`);
 				continue;
 			}
 			if (!path.piece.array && Array.isArray(value)) {
-				result.errors.push(guild ?
-					guild.language.get('SETTING_GATEWAY_KEY_NOT_ARRAY', key) :
+				result.errors.push(username ?
+					username.language.get('SETTING_GATEWAY_KEY_NOT_ARRAY', key) :
 					`The path ${key} does not store multiple values.`);
 				continue;
 			}
-			promises.push(this._parse(value, guild, options, result, path));
+			promises.push(this._parse(value, username, options, result, path));
 		}
 
 		if (promises.length) {
@@ -357,18 +355,18 @@ class Settings {
 	 * Parse a value
 	 * @since 0.5.0
 	 * @param {*} value The value to parse
-	 * @param {?KlasaGuild} guild The KlasaGuild for context in SchemaPiece#parse
+	 * @param {?string} username The username for context in SchemaPiece#parse
 	 * @param {SettingsUpdateOptions} options The parse options
 	 * @param {SettingsUpdateResult} result The updated result
 	 * @param {GatewayGetPathResult} path The path result
 	 * @private
 	 */
-	async _parse(value, guild, options, result, { piece, route }) {
+	async _parse(value, username, options, result, { piece, route }) {
 		const parsed = value === null ?
 			deepClone(piece.default) :
 			await (Array.isArray(value) ?
-				this._parseAll(piece, value, guild, result.errors) :
-				piece.parse(value, guild).catch((error) => { result.errors.push(error); }));
+				this._parseAll(piece, value, username, result.errors) :
+				piece.parse(value, username).catch((error) => { result.errors.push(error); }));
 		if (typeof parsed === 'undefined') return;
 		const parsedID = Array.isArray(parsed) ? parsed.map(val => piece.serializer.serialize(val)) : piece.serializer.serialize(parsed);
 		if (piece.array) {
@@ -444,14 +442,14 @@ class Settings {
 	 * @since 0.5.0
 	 * @param {SchemaPiece} piece The SchemaPiece pointer that parses this entry
 	 * @param {Array<*>} values The values to parse
-	 * @param {?KlasaGuild} guild The KlasaGuild for context in SchemaPiece#parse
+	 * @param {?username} username The username for context in SchemaPiece#parse
 	 * @param {Error[]} errors The Errors array
 	 * @returns {Array<number|string>}
 	 * @private
 	 */
-	async _parseAll(piece, values, guild, errors) {
+	async _parseAll(piece, values, username, errors) {
 		const output = [];
-		await Promise.all(values.map(value => piece.parse(value, guild)
+		await Promise.all(values.map(value => piece.parse(value, username)
 			.then(parsed => output.push(parsed))
 			.catch(error => errors.push(error))));
 
