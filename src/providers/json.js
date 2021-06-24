@@ -7,8 +7,7 @@ const fs = require('fs-nextra');
  * JSON provider that provides json-based storage at a atomic level.
  * @extends {Provider}
  */
-
-module.exports = class extends Provider {
+class JsonProvider extends Provider {
 
 	constructor(...args) {
 		super(...args);
@@ -161,4 +160,6 @@ module.exports = class extends Provider {
 		return fs.unlink(resolve(this.baseDirectory, table, `${document}.json`));
 	}
 
-};
+}
+
+module.exports = JsonProvider;

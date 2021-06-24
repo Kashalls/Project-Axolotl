@@ -3,6 +3,7 @@ const { join } = require('path');
 
 /**
  * The common class for all pieces
+ * @class
  * @see Command
  * @see Event
  * @see Inhibitor
@@ -10,7 +11,7 @@ const { join } = require('path');
  * @see Provider
  * @see Task
  */
-class Piece {
+class BasePiece {
 
 	/**
 	 * @typedef {Object} PieceOptions
@@ -95,7 +96,8 @@ class Piece {
 	/**
 	 * Reloads this piece
 	 * @since 0.0.1
-	 * @returns {Piece} The newly loaded piece
+	 * @private
+	 * @returns {BasePiece} The newly loaded piece
 	 */
 	async reload() {
 		const piece = this.store.load(this.directory, this.file);
@@ -161,6 +163,7 @@ class Piece {
 	/**
 	 * Defines the JSON.stringify behavior of this task.
 	 * @since 0.0.1
+	 * @private
 	 * @returns {Object}
 	 */
 	toJSON() {
@@ -176,4 +179,4 @@ class Piece {
 
 }
 
-module.exports = Piece;
+module.exports = BasePiece;

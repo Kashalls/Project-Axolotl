@@ -7,7 +7,7 @@ const { isObject, mergeObjects, makeObject } = require('../util/util');
  * @tutorial CreatingProviders
  * @extends {Piece}
  */
-class Provider extends Piece {
+class BaseProvider extends Piece {
 
 	/**
 	 * Inserts or creates a table in the database.
@@ -182,4 +182,4 @@ class Provider extends Piece {
 
 }
 
-module.exports = Provider;
+module.exports = BaseProvider;

@@ -6,7 +6,9 @@ module.exports = {
 	Schedule: require('./library/schedule/Schedule'),
 	ShheduleTask: require('./library/schedule/ScheduledTask'),
 
+	AliasPiece: require('./library/structures/base/AliasPiece'),
 	Piece: require('./library/structures/base/Piece'),
+	AliasStore: require('./library/structures/base/AliasStore'),
 	Store: require('./library/structures/base/Store'),
 
 	Settings: require('./library/settings/Settings'),
