@@ -1,10 +1,29 @@
 {
   "devDependencies": {
+    "@discordjs/docgen": "discordjs/docgen",
     "eslint": "^7.29.0",
-    "eslint-config-kashall": "Kashalls/Kashall-lint"
+    "eslint-config-kashall": "github:Kashalls/Kashall-lint"
   },
   "dependencies": {
-    "@discordjs/collection": "discordjs/collection",
+    "@discordjs/collection": "github:discordjs/collection",
+    "fs-nextra": "^0.5.1",
     "minecraft-data": "^2.85.3"
-  }
+  },
+  "name": "axolotl",
+  "description": "Project Axolotl",
+  "version": "0.0.1",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kashalls/Project-Axolotl.git"
+  },
+  "author": "Kashalls",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Kashalls/Project-Axolotl/issues"
+  },
+  "homepage": "https://github.com/Kashalls/Project-Axolotl#readme"
 }

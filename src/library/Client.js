@@ -7,6 +7,15 @@ const Collection = require('@discordjs/collection');
 const { DEFAUILTS } = require('./util/Constants');
 const Util = require('./util/Util');
 const AxolotlConsole = require('./util/AxolotlConsole');
+const CommandStore = require('./structures/CommandStore');
+const InhibitorStore = require('./structures/InhibitorStore');
+const MonitorStore = require('./structures/MonitorStore');
+const ProviderStore = require('./structures/ProviderStore');
+const EventStore = require('./structures/EventStore');
+const TaskStore = require('./structures/TaskStore');
+const GatewayDriver = require('./settings/GatewayDriver');
+const Stopwatch = require('./util/Stopwatch');
+const Schedule = require('./schedule/Schedule');
 
 // external plugions
 const plugins = new Set();
@@ -19,11 +28,6 @@ class AxolotlClient extends BaseClient {
 	 */
 
 	/**
-	 * Defaulted to Client.defaultPermissionLevels
-	 * @typedef {PermissionLevels} PermissionLevelsOverload
-	 */
-
-	/**
 	 * @typedef {external:ClientOptions} AxolotlClientOptions
 	 * @property {boolean} [commandLogging=false] Whether the bot should log command usage.
 	 * @property {ConsoleEvents} [consoleEvents={}] Options to pass to the Console Client
@@ -31,7 +35,6 @@ class AxolotlClient extends BaseClient {
 	 * @property {boolean} [createPiecesFolder=true] Should axolotl create folders for each piece at start up.
 	 * @property {string[]} [disabledCorePieces=[]] An array of disabled core piece types, e.g. ['commands', 'events']
 	 * @property {string[]} [owners=[]] A list of minecraft usernames that are allowed full access to your bot. It is generally not a good idea to give access to accounts you share.
-	 * @property {PermissionLevelsOverload} [permissionLevels] Permission levels to use with this bot.
 	 * @property {PieceDefaults} [pieceDefaults={}] Overrides all of the defaults for those pieces.
 	 * @property {string|string[]} [prefix] The default prefix the bot should respond to.
 	 * @property {boolean} [production=false] Whether the bot should handle unhandled promise rejections automatically (handles when false) (also can be configured with process.env.NODE_ENV)
@@ -104,6 +107,42 @@ class AxolotlClient extends BaseClient {
 		this.commands = new CommandStore(this);
 
 		/**
+		 * The cache where inhibitors are stored
+		 * @since 0.0.1
+		 * @type {InhibitorStore}
+		 */
+		this.inhibitors = new InhibitorStore(this);
+
+		/**
+		 * The cache where monitors are stored
+		 * @since 0.0.1
+		 * @type {MonitorStore}
+		 */
+		this.monitors = new MonitorStore(this);
+
+		/**
+		 * The cache where providers are stored
+		 * @since 0.0.1
+		 * @type {ProviderStore}
+		 */
+		this.providers = new ProviderStore(this);
+
+		/**
+		 * The cache where events are stored
+		 * @since 0.0.1
+		 * @type {EventStore}
+		 */
+		this.events = new EventStore(this);
+
+		/**
+		 * The cache where tasks are stored
+		 * @since 0.5.0
+		 * @type {TaskStore}
+		 */
+		this.tasks = new TaskStore(this);
+
+
+		/**
 		 * The store registry
 		 * @since 0.0.1
 		 * @type {external:Collection}
@@ -111,17 +150,29 @@ class AxolotlClient extends BaseClient {
 		this.pieceStores = new Collection();
 
 		/**
-		 * The permissions structure for this bot
-		 * @since 0.0.1
-		 * @type {PermissionLevels}
+		 * The GatewayDriver instance where the gateways are stored
+		 * @since 0.5.0
+		 * @type {GatewayDriver}
 		 */
-		this.permissionLevels = this.validatePermissionLevels();
+		this.gateways = new GatewayDriver(this);
+
+		const { clientStorage } = this.options.gateways;
+		const clientSchema = 'schema' in clientStorage ? clientStorage.schema : this.constructor.defaultClientSchema;
+
+		const prefixKey = clientSchema.get('prefix');
+		if (!prefixKey || prefixKey.default === null) {
+			clientSchema.add('prefix', 'string', { array: Array.isArray(this.options.prefix), default: this.options.prefix });
+		}
+
+		this.gateways.register('clientStorage', { ...clientStorage, schema: clientSchema });
+
 
 		this.registerStore(this.commands)
 			.registerStore(this.inhibitors)
 			.registerStore(this.monitors)
 			.registerStore(this.events)
-			.registerStore(this.tasks);
+			.registerStore(this.tasks)
+			.registerStore(this.providers);
 
 		const coreDirectory = path.join(__dirname, '../');
 		for (const store of this.pieceStores.values()) store.registerCoreDirectory(coreDirectory);
@@ -142,7 +193,7 @@ class AxolotlClient extends BaseClient {
 
 		/**
 		 * The regexp for a prefix mention
-		 * @since 0.5.0
+		 * @since 0.0.1
 		 * @type {RegExp}
 		 */
 		this.mentionPrefix = null;
@@ -169,21 +220,8 @@ class AxolotlClient extends BaseClient {
 	}
 
 	/**
-	 * Validates the permission structure passed to the client
-	 * @since 0.0.1
-	 * @returns {PermissionLevels}
-	 * @private
-	 */
-	validatePermissionLevels() {
-		const permissionLevels = this.options.permissionLevels || this.constructor.defaultPermissionLevels;
-		if (!(permissionLevels instanceof PermissionLevels)) throw new Error('permissionLevels must be an instance of the PermissionLevels class');
-		if (permissionLevels.isValid()) return permissionLevels;
-		throw new Error(permissionLevels.debug());
-	}
-
-	/**
 	 * Registers a custom store to the client
-	 * @since 0.3.0
+	 * @since 0.0.1
 	 * @param {Store} store The store that pieces will be stored in
 	 * @returns {this}
 	 * @chainable
@@ -195,7 +233,7 @@ class AxolotlClient extends BaseClient {
 
 	/**
 		 * Un-registers a custom store from the client
-		 * @since 0.3.0
+		 * @since 0.0.1
 		 * @param {Store} storeName The store that pieces will be stored in
 		 * @returns {this}
 		 * @chainable
@@ -224,7 +262,7 @@ class AxolotlClient extends BaseClient {
 
 	/**
 	 * Caches a plugin module to be used when creating a Axolotl instance
-	 * @since 0.5.0
+	 * @since 0.0.1
 	 * @param {Object} mod The module of the plugin to use
 	 * @returns {this}
 	 * @chainable
@@ -242,21 +280,10 @@ module.exports = AxolotlClient;
 
 /**
  * The plugin symbol to be used in external packages
- * @since 0.5.0
+ * @since 0.0.1
  * @type {Symbol}
  */
 AxolotlClient.plugin = Symbol('AxolotlPlugin');
-
-/**
- * The default PermissionLevels
- * @since 0.2.1
- * @type {PermissionLevels}
- */
-AxolotlClient
-	.defaultPermissionLevels = new PermissionLevels()
-		.add(0, () => true)
-		.add(1, ({ user, client }) => client.users.has(user))
-		.add(10, ({ user, client }) => client.owners.has(user));
 
 /**
  * Emitted when Axolotl is fully ready and initialized.
@@ -267,28 +294,28 @@ AxolotlClient
 /**
  * A central logging event for AxolotlClient.
  * @event AxolotlClient#log
- * @since 0.3.0
+ * @since 0.0.1
  * @param {(string|Object)} data The data to log
  */
 
 /**
  * An event for handling verbose logs
  * @event AxolotlClient#verbose
- * @since 0.4.0
+ * @since 0.0.1
  * @param {(string|Object)} data The data to log
  */
 
 /**
  * An event for handling wtf logs (what a terrible failure)
  * @event AxolotlClient#wtf
- * @since 0.4.0
+ * @since 0.0.1
  * @param {(string|Object)} data The data to log
  */
 
 /**
  * Emitted when an unknown command is called.
  * @event AxolotlClient#commandUnknown
- * @since 0.4.0
+ * @since 0.0.1
  * @param {string} message The message that triggered the command
  * @param {string} command The command attempted to run
  * @param {RegExp} prefix The prefix used
@@ -298,7 +325,7 @@ AxolotlClient
 /**
  * Emitted when a command has been inhibited.
  * @event AxolotlClient#commandInhibited
- * @since 0.3.0
+ * @since 0.0.1
  * @param {string} message The message that triggered the command
  * @param {Command} command The command triggered
  * @param {?string[]} response The reason why it was inhibited if not silent
@@ -307,7 +334,7 @@ AxolotlClient
 /**
  * Emitted when a command has been run.
  * @event AxolotlClient#commandRun
- * @since 0.3.0
+ * @since 0.0.1
  * @param {string} message The message that triggered the command
  * @param {Command} command The command run
  * @param {string[]} args The raw arguments of the command
@@ -316,7 +343,7 @@ AxolotlClient
 /**
  * Emitted when a command has been run.
  * @event AxolotlClient#commandSuccess
- * @since 0.5.0
+ * @since 0.0.1
  * @param {string} message The message that triggered the command
  * @param {Command} command The command run
  * @param {any[]} params The resolved parameters of the command
@@ -326,7 +353,7 @@ AxolotlClient
 /**
  * Emitted when a command has encountered an error.
  * @event AxolotlClient#commandError
- * @since 0.3.0
+ * @since 0.0.1
  * @param {string} message The message that triggered the command
  * @param {Command} command The command run
  * @param {any[]} params The resolved parameters of the command
@@ -336,7 +363,7 @@ AxolotlClient
 /**
  * Emitted when an event has encountered an error.
  * @event AxolotlClient#eventError
- * @since 0.5.0
+ * @since 0.0.1
  * @param {Event} event The event that errored
  * @param {any[]} args The event arguments
  * @param {(string|Object)} error The event error
@@ -345,7 +372,7 @@ AxolotlClient
 /**
  * Emitted when a monitor has encountered an error.
  * @event AxolotlClient#monitorError
- * @since 0.4.0
+ * @since 0.0.1
  * @param {string} message The message that triggered the monitor
  * @param {Monitor} monitor The monitor run
  * @param {(Error|string)} error The monitor error
@@ -354,7 +381,7 @@ AxolotlClient
 /**
  * Emitted when a finalizer has encountered an error.
  * @event AxolotlClient#finalizerError
- * @since 0.5.0
+ * @since 0.0.1
  * @param {string} message The message that triggered the finalizer
  * @param {Command} command The command this finalizer is for (may be different than message.command)
  * @param {string|any} response The response from the command
@@ -366,7 +393,7 @@ AxolotlClient
 /**
  * Emitted when a task has encountered an error.
  * @event AxolotlClient#taskError
- * @since 0.5.0
+ * @since 0.0.1
  * @param {ScheduledTask} scheduledTask The scheduled task
  * @param {Task} task The task run
  * @param {(Error|string)} error The task error
@@ -375,35 +402,35 @@ AxolotlClient
 /**
  * Emitted when a piece is loaded. (This can be spammy on bot startup or anytime you reload all of a piece type.)
  * @event AxolotlClient#pieceLoaded
- * @since 0.4.0
+ * @since 0.0.1
  * @param {Piece} piece The piece that was loaded
  */
 
 /**
  * Emitted when a piece is unloaded.
  * @event AxolotlClient#pieceUnloaded
- * @since 0.4.0
+ * @since 0.0.1
  * @param {Piece} piece The piece that was unloaded
  */
 
 /**
  * Emitted when a piece is reloaded.
  * @event AxolotlClient#pieceReloaded
- * @since 0.4.0
+ * @since 0.0.1
  * @param {Piece} piece The piece that was reloaded
  */
 
 /**
  * Emitted when a piece is enabled.
  * @event AxolotlClient#pieceEnabled
- * @since 0.4.0
+ * @since 0.0.1
  * @param {Piece} piece The piece that was enabled
  */
 
 /**
  * Emitted when a piece is disabled.
  * @event AxolotlClient#pieceDisabled
- * @since 0.4.0
+ * @since 0.0.1
  * @param {Piece} piece The piece that was disabled
  */
 

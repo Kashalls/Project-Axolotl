@@ -9,21 +9,21 @@ const REGEXPESC = /[-/\\^$*+?.()|[\]{}]/g;
 class Util {
 
 	/**
-     * This class may not be initiated with new
-     * @since 0.0.1
-     * @throws {Error}
-     * @private
-     */
+	 * This class may not be initiated with new
+	 * @since 0.0.1
+	 * @throws {Error}
+	 * @private
+	 */
 	constructor() {
 		throw new Error('This class may not be initated with new');
 	}
 
 	/**
-     * Converts a string to Title Case
-     * @since 0.0.1
-     * @param {string} text The text to  title case.
-     * @returns {string}
-     */
+	 * Converts a string to Title Case
+	 * @since 0.0.1
+	 * @param {string} text The text to  title case.
+	 * @returns {string}
+	 */
 	static toTitleCase(text) {
 		return text.replace(TOTITLECASE, (txt) => Util.titleCaseVariants[txt] || txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
 	}
@@ -162,6 +162,43 @@ class Util {
 		}
 
 		return given;
+	}
+
+	/**
+	 * Compare if both arrays are strictly equal
+	 * @since 0.5.0
+	 * @param {any[]} arr1 The first array to compare
+	 * @param {any[]} arr2 The second array to compare
+	 * @returns {boolean}
+	 */
+	static arraysStrictEquals(arr1, arr2) {
+		if (arr1 === arr2) return true;
+		if (arr1.length !== arr2.length) return false;
+
+		for (let i = 0; i < arr1.length; i++) {
+			if (arr1[i] !== arr2[i]) return false;
+		}
+		return true;
+	}
+
+	/**
+	 * Convert an object to a tuple
+	 * @since 0.5.0
+	 * @param {Object<string, *>} object The object to convert
+	 * @param {string} [prefix=''] The prefix for the key
+	 * @returns {Array<Array<*>>}
+	 */
+	static objectToTuples(object, prefix = '') {
+		const entries = [];
+		for (const [key, value] of Object.entries(object)) {
+			if (Util.isObject(value)) {
+				entries.push(...Util.objectToTuples(value, `${prefix}${key}.`));
+			} else {
+				entries.push([`${prefix}${key}`, value]);
+			}
+		}
+
+		return entries;
 	}
 
 }
