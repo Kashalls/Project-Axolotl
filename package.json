@@ -1,8 +1,11 @@
 {
   "devDependencies": {
     "@discordjs/docgen": "discordjs/docgen",
+    "conventional-changelog": "^3.1.24",
     "eslint": "^7.29.0",
-    "eslint-config-kashall": "github:Kashalls/Kashall-lint"
+    "eslint-config-kashall": "github:Kashalls/Kashall-lint",
+    "eslint-plugin-markdown": "^2.2.0",
+    "gen-esm-wrapper": "^1.1.2"
   },
   "dependencies": {
     "@discordjs/collection": "github:discordjs/collection",
@@ -14,7 +17,13 @@
   "version": "0.0.1",
   "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "yarn lint && yarn lint:md && yarn docs:test",
+    "lint": "eslint .",
+    "lint:typings": "tslint typings/index.d.ts",
+    "docs": "docgen --source src --custom docs/index.yml --output docs/docs.json",
+    "docs:test": "docgen --source src --custom docs/index.yml",
+    "changelog": "conventional-changelog -p angular -i RELEASE_CHANGELOG.md -s",
+    "prepublishOnly": "npm run test && gen-esm-wrapper ./src/index.js ./src/index.mjs"
   },
   "repository": {
     "type": "git",
@@ -25,5 +34,25 @@
   "bugs": {
     "url": "https://github.com/Kashalls/Project-Axolotl/issues"
   },
-  "homepage": "https://github.com/Kashalls/Project-Axolotl#readme"
+  "homepage": "https://github.com/Kashalls/Project-Axolotl#readme",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=7.0.0"
+  },
+  "keywords": [
+    "axolotl",
+    "node",
+    "minecraft",
+    "mc",
+    "minecraft-protocol",
+    "minecraft protocol",
+    "minecraft bot",
+    "bot client",
+    "bot",
+    "mcclient"
+  ],
+  "exports": {
+    "require": "./src/index.js",
+    "import": "./src/index.mjs"
+  }
 }
