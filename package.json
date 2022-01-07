@@ -9,7 +9,7 @@
     "gen-esm-wrapper": "1.1.2"
   },
   "dependencies": {
-    "@discordjs/collection": "^0.1.6",
+    "@discordjs/collection": "^0.4.0",
     "fs-nextra": "^0.5.1",
     "minecraft-data": "^2.85.3",
     "minecraft-protocol": "LecternJS/minecraft-protocol"
