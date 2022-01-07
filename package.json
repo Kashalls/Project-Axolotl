@@ -5,7 +5,7 @@
     "conventional-changelog": "3.1.25",
     "eslint": "7.29.0",
     "eslint-config-kashall": "github:Kashalls/Kashall-lint",
-    "eslint-plugin-markdown": "2.2.0",
+    "eslint-plugin-markdown": "2.2.1",
     "gen-esm-wrapper": "1.1.2"
   },
   "dependencies": {
