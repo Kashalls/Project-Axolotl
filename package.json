@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "@commitlint/config-angular": "12.1.4",
+    "@commitlint/config-angular": "16.0.0",
     "@discordjs/docgen": "discordjs/docgen",
     "conventional-changelog": "3.1.25",
     "eslint": "8.6.0",
