@@ -3,7 +3,7 @@
     "@commitlint/config-angular": "12.1.4",
     "@discordjs/docgen": "discordjs/docgen",
     "conventional-changelog": "3.1.25",
-    "eslint": "7.29.0",
+    "eslint": "8.6.0",
     "eslint-config-kashall": "github:Kashalls/Kashall-lint",
     "eslint-plugin-markdown": "2.2.1",
     "gen-esm-wrapper": "1.1.2"
