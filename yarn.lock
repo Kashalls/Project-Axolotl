@@ -1963,6 +1963,11 @@ minecraft-data@^2.85.3:
   resolved "https://registry.yarnpkg.com/minecraft-data/-/minecraft-data-2.85.3.tgz#11cd6104f39b2cc91b71155e766d5eb2be50660b"
   integrity sha512-2AouqHnbpyCaTx4Pf6/SFVZXLO2QHyG2Q9LW7Sgum0ONZzmgOA4n6rnseKDetxEC7ez79bW5boVeeOX5zN7wQA==
 
+minecraft-data@^3.0.0:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/minecraft-data/-/minecraft-data-3.1.1.tgz#b61cddfa4a7942695aa6231fac7148305f14458b"
+  integrity sha512-dB8IibYi7iygiNNXaC6JGSAc7UkDebq1rQ9AMZMaY8Y0VeSRnRl9qD3YlnK0Oz3ywtgHnHOyHT/tGIbX8pCPJQ==
+
 minecraft-protocol@LecternJS/minecraft-protocol:
   version "2.0.0"
   resolved "https://codeload.github.com/LecternJS/minecraft-protocol/tar.gz/c87b13ec4c0ba4796618891419aad7d3855e7530"
