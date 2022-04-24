@@ -11,7 +11,7 @@
   "dependencies": {
     "@discordjs/collection": "^0.4.0",
     "fs-nextra": "^0.5.1",
-    "minecraft-data": "^2.85.3",
+    "minecraft-data": "^3.0.0",
     "minecraft-protocol": "LecternJS/minecraft-protocol"
   },
   "name": "axolotl",
